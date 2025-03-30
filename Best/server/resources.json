@@ -1,0 +1,26 @@
+{
+    "resources": [
+      {
+        "category": "admission",
+        "links": [
+          {
+            "title": "ระบบรับสมัครนักศึกษา",
+            "url": "https://www.admissions.kku.ac.th"
+          },
+          {
+            "title": "เว็บไซต์คณะวิศวกรรมศาสตร์",
+            "url": "https://www.en.kku.ac.th"
+          }
+        ]
+      },
+      {
+        "category": "tuition",
+        "links": [
+          {
+            "title": "ค่าธรรมเนียมการศึกษาปริญญาตรี",
+            "url": "https://www.en.kku.ac.th/web/tuition-fees"
+          }
+        ]
+      }
+    ]
+  }

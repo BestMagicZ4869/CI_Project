@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot คณะวิศวกรรมศาสตร์ มหาวิทยาลัยขอนแก่น</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #b71c1c;
+            --secondary-color: #e53935;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --text-color: #333;
+            --text-light: #777;
+        }
+        
+        body {
+            font-family: 'Sarabun', Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        
+        .header img {
+            height: 50px;
+            margin-right: 15px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        #chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 150px);
+        }
+        
+        #chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            background-color: white;
+            color: var(--text-color);
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            align-items: center;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        #send-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        #send-button:hover {
+            background: var(--secondary-color);
+        }
+        
+        #send-button i {
+            font-size: 18px;
+        }
+        
+        .file-upload-label {
+            background: #f0f0f0;
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 24px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        
+        .file-upload-label:hover {
+            background: #e0e0e0;
+        }
+        
+        .file-upload-label i {
+            margin-right: 5px;
+        }
+        
+        #file-upload {
+            display: none;
+        }
+        
+        #file-preview {
+            padding: 0 15px 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .file-preview-item {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .file-preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .remove-file-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 16px;
+            padding: 0 5px;
+        }
+        
+        .remove-file-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        .chat-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .chat-file {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 18px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ccc;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        @media (max-width: 768px) {
+            #chat-container {
+                margin: 0;
+                border-radius: 0;
+                height: 100vh;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .input-area {
+                flex-wrap: wrap;
+            }
+            
+            #user-input {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .file-upload-label {
+                margin-left: 0;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <img src="logo.png" alt="โลโก้คณะวิศวกรรมศาสตร์">
+            <h1>Chatbot คณะวิศวกรรมศาสตร์ มหาวิทยาลัยขอนแก่น</h1>
+        </div>
+    </div>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="พิมพ์คำถามของคุณที่นี่...">
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            <label for="file-upload" class="file-upload-label">
+                <i class="fas fa-paperclip"></i>
+                <span>แนบไฟล์</span>
+                <input type="file" id="file-upload" accept="image/*,.pdf,.doc,.docx,.txt">
+            </label>
+        </div>
+        <div id="file-preview"></div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const fileUpload = document.getElementById('file-upload');
+        const filePreview = document.getElementById('file-preview');
+
+        let currentFile = null;
+        let isBotTyping = false;
+
+        // ตัวอย่างคำถามแนะนำ
+        const sampleQuestions = [
+            "ค่าธรรมเนียมการศึกษาวิศวกรรมคอมพิวเตอร์เป็นเท่าไหร่?",
+            "วิธีการสมัครเรียนรอบ Portfolio เป็นอย่างไร?",
+            "หลักสูตรวิศวกรรมศาสตร์มีสาขาอะไรบ้าง?",
+            "ต้องการติดต่อฝ่ายวิชาการทำอย่างไร?"
+        ];
+
+        // แสดงคำถามแนะนำเมื่อเริ่มต้น
+        function showSampleQuestions() {
+            const sampleContainer = document.createElement('div');
+            sampleContainer.className = 'sample-questions';
+            
+            const title = document.createElement('div');
+            title.textContent = 'ตัวอย่างคำถามที่คุณสามารถถามได้:';
+            title.style.marginBottom = '10px';
+            title.style.fontWeight = '500';
+            title.style.color = 'var(--text-light)';
+            sampleContainer.appendChild(title);
+            
+            sampleQuestions.forEach(question => {
+                const qElement = document.createElement('div');
+                qElement.textContent = question;
+                qElement.style.padding = '8px 12px';
+                qElement.style.margin = '5px 0';
+                qElement.style.background = '#e3f2fd';
+                qElement.style.borderRadius = '12px';
+                qElement.style.cursor = 'pointer';
+                qElement.style.fontSize = '14px';
+                qElement.addEventListener('click', () => {
+                    userInput.value = question;
+                    userInput.focus();
+                });
+                sampleContainer.appendChild(qElement);
+            });
+            
+            chatMessages.appendChild(sampleContainer);
+        }
+
+        // แสดงตัวบ่งชี้การพิมพ์ของบอท
+        function showTypingIndicator() {
+            if (isBotTyping) return;
+            
+            isBotTyping = true;
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ซ่อนตัวบ่งชี้การพิมพ์ของบอท
+        function hideTypingIndicator() {
+            isBotTyping = false;
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // ฟังก์ชันเพิ่มข้อความในแชท
+        function addMessage(message, isUser = false, file = null) {
+            hideTypingIndicator();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'chat-image';
+                    messageDiv.appendChild(img);
+                } else {
+                    const fileElement = document.createElement('div');
+                    fileElement.className = 'chat-file';
+                    fileElement.innerHTML = `
+                        <i class="fas fa-file-alt"></i>
+                        <span>${file.name}</span>
+                        <small>(${formatFileSize(file.size)})</small>
+                    `;
+                    messageDiv.appendChild(fileElement);
+                }
+            }
+            
+            if (message) {
+                // แปลง URL ในข้อความให้เป็นลิงก์
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const parts = message.split(urlRegex);
+                
+                const textContainer = document.createElement('div');
+                
+                parts.forEach((part, i) => {
+                    if (urlRegex.test(part)) {
+                        const link = document.createElement('a');
+                        link.href = part;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = part;
+                        link.style.color = isUser ? '#fff' : 'var(--primary-color)';
+                        textContainer.appendChild(link);
+                    } else {
+                        textContainer.appendChild(document.createTextNode(part));
+                    }
+                });
+                
+                messageDiv.appendChild(textContainer);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // จัดรูปแบบขนาดไฟล์
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' ไบต์';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // ส่งข้อความไปยังเซิร์ฟเวอร์
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message && !currentFile) return;
+
+            addMessage(message, true, currentFile);
+            userInput.value = '';
+            sendButton.disabled = true;
+            showTypingIndicator();
+
+            try {
+                const formData = new FormData();
+                if (message) formData.append('message', message);
+                if (currentFile) formData.append('file', currentFile);
+
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('การเชื่อมต่อกับเซิร์ฟเวอร์มีปัญหา');
+                
+                const data = await response.json();
+                
+                // แยกคำตอบและลิงก์ (ถ้ามี)
+                if (data.response) {
+                    addMessage(data.response, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage(`⚠️ เกิดข้อผิดพลาด: ${error.message}`, false);
+            } finally {
+                sendButton.disabled = false;
+                currentFile = null;
+                fileUpload.value = '';
+                filePreview.innerHTML = '';
+            }
+        }
+
+        // จัดการการเลือกไฟล์
+        fileUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            currentFile = file;
+            
+            // แสดงตัวอย่างไฟล์
+            filePreview.innerHTML = '';
+            const previewElement = document.createElement('div');
+            previewElement.className = 'file-preview-item';
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'file-preview-image';
+                previewElement.appendChild(img);
+            } else {
+                const icon = document.createElement('i');
+                icon.className = file.type.includes('pdf') ? 'fas fa-file-pdf' : 
+                                 file.type.includes('word') ? 'fas fa-file-word' : 
+                                 'fas fa-file-alt';
+                previewElement.appendChild(icon);
+            }
+            
+            const fileName = document.createElement('span');
+            fileName.textContent = file.name;
+            previewElement.appendChild(fileName);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-file-btn';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.onclick = () => {
+                currentFile = null;
+                fileUpload.value = '';
+                filePreview.innerHTML = '';
+            };
+            previewElement.appendChild(removeBtn);
+            
+            filePreview.appendChild(previewElement);
+        });
+
+        // ตั้งค่าการคลิกปุ่มส่งและกด Enter
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // แสดงคำถามตัวอย่างเมื่อโหลดหน้า
+        window.addEventListener('DOMContentLoaded', () => {
+            // แสดงข้อความต้อนรับ
+            addMessage("สวัสดีครับ/ค่ะ! ผมเป็นผู้ช่วยตอบคำถามเกี่ยวกับคณะวิศวกรรมศาสตร์ มหาวิทยาลัยขอนแก่น คุณสามารถสอบถามข้อมูลเกี่ยวกับการรับสมัคร, หลักสูตร, ค่าเทอม หรือข้อมูลอื่นๆ ได้ที่นี่ครับ/ค่ะ", false);
+            
+            // แสดงคำถามตัวอย่างหลังจากข้อความต้อนรับ
+            setTimeout(showSampleQuestions, 500);
+        });
+    </script>
+</body>
+</html>
